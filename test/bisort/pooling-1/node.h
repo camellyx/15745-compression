@@ -2,7 +2,8 @@
 
 /* =============== NODE STRUCTURE =================== */
 
-struct node { 
+struct node {
+  int index;
   int value;
   struct node *left;
   struct node *right;

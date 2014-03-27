@@ -16,6 +16,10 @@ int random(int);
 
 int flag=0,foo=0;
 
+//pooling
+#define MAX_COUNT 1000000
+int count = 0;
+
 #define LocalNewNode(h,v) \
 { \
     h = (HANDLE *) malloc(sizeof(struct node)); \
