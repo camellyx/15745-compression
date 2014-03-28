@@ -18,7 +18,7 @@ int random(int);
 int flag=0,foo=0;
 
 // splitting
-//#define NDEBUG
+#define NDEBUG
 #define MAX_COUNT 10000000
 size_t count = 0;
 HANDLE *node_arr; // equal to first field: value_arr
