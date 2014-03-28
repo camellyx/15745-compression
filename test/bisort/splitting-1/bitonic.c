@@ -5,6 +5,7 @@
 #include "node.h"   /* Node Definition */
 #include "proc.h"   /* Procedure Types/Nums */
 #include <stdio.h>
+#include <assert.h>
 
 #define CONST_m1 10000
 #define CONST_b 31415821
@@ -16,12 +17,24 @@ int random(int);
 
 int flag=0,foo=0;
 
+// splitting
+//#define NDEBUG
+#define MAX_COUNT 10000000
+size_t count = 0;
+HANDLE *node_arr; // equal to first field: value_arr
+HANDLE *value_arr;
+HANDLE **left_arr;
+HANDLE **right_arr;
+
+// splitting
 #define LocalNewNode(h,v) \
 { \
-  h = (HANDLE *) malloc(sizeof(struct node)); \
-  h->value = v; \
-  h->left = NIL; \
-  h->right = NIL; \
+  h = node_arr + count; \
+  value_arr[count] = v; \
+  left_arr[count] = NIL; \
+  right_arr[count] = NIL; \
+  count++; \
+  assert(count < MAX_COUNT); \
 };
 
 #define NewNode(h,v,procid) LocalNewNode(h,v)
@@ -29,12 +42,13 @@ int flag=0,foo=0;
 void InOrder(HANDLE *h) {
   HANDLE *l, *r;
   if ((h != NIL)) {
-    l = h->left;
-    r = h->right;
+    size_t index = h - node_arr;
+    l = left_arr[index];
+    r = right_arr[index];
     InOrder(l);
     static unsigned char counter = 0;
     if (counter++ == 0)   /* reduce IO */
-      printf("%d @ 0x%x\n",h->value, 0);
+      printf("%d @ 0x%x\n",value_arr[index], 0);
     InOrder(r);
   }
 }
@@ -74,10 +88,11 @@ HANDLE* RandTree(int n, int seed, int node, int level) {
     f_left.value = RandTree((n/2),seed,newnode,level+1);
     f_right.value = RandTree((n/2),skiprand(seed,(n)+1),node,level+1);
 
-    h->left = f_left.value;
-    h->right = f_right.value;
+    size_t index = h - node_arr;
+    left_arr[index] = f_left.value;
+    right_arr[index] = f_right.value;
   } else {
-    h = 0;
+    h = NIL;
   }
   return h;
 }
@@ -85,10 +100,12 @@ HANDLE* RandTree(int n, int seed, int node, int level) {
 void SwapValue(HANDLE *l, HANDLE *r) {
   int temp,temp2;
 
-  temp = l->value;
-  temp2 = r->value;
-  r->value = temp;
-  l->value = temp2;
+  size_t lindex = l - node_arr;
+  size_t rindex = r - node_arr;
+  temp = value_arr[lindex];
+  temp2 = value_arr[rindex];
+  value_arr[rindex] = temp;
+  value_arr[lindex] = temp2;
 } 
 
 void
@@ -101,10 +118,12 @@ SwapValLeft(l,r,ll,rl,lval,rval)
   HANDLE *rl;
   int lval, rval;
 {
-  r->value = lval;
-  r->left = ll;
-  l->left = rl;
-  l->value = rval;
+  size_t lindex = l - node_arr;
+  size_t rindex = r - node_arr;
+  value_arr[rindex] = lval;
+  left_arr[rindex] = ll;
+  left_arr[lindex] = rl;
+  value_arr[lindex] = rval;
 } 
 
 
@@ -118,10 +137,12 @@ SwapValRight(l,r,lr,rr,lval,rval)
   HANDLE *rr;
   int lval, rval;
 {  
-  r->value = lval;
-  r->right = lr;
-  l->right = rr;
-  l->value = rval;
+  size_t lindex = l - node_arr;
+  size_t rindex = r - node_arr;
+  value_arr[rindex] = lval;
+  right_arr[rindex] = lr;
+  right_arr[lindex] = rr;
+  value_arr[lindex] = rval;
   /*printf("Swap Val Right l 0x%x,r 0x%x val: %d %d\n",l,r,lval,rval);*/
 } 
 
@@ -142,26 +163,29 @@ Bimerge(root,spr_val,dir)
 
 
   /*printf("enter bimerge %x\n", root);*/
-  rv = root->value;
+  size_t root_index = root - node_arr;
+  rv = value_arr[root_index];
 
-  pl = root->left;
-  pr = root->right;
+  pl = left_arr[root_index];
+  pr = right_arr[root_index];
   rightexchange = ((rv > spr_val) ^ dir);
   if (rightexchange)
   {
-    root->value = spr_val;
+    value_arr[root_index] = spr_val;
     spr_val = rv;
   }
 
   while ((pl != NIL))
   {
     /*printf("pl = 0x%x,pr = 0x%x\n",pl,pr);*/
-    lv = pl->value;        /* <------- 8.2% load penalty */
-    pll = pl->left;
-    plr = pl->right;       /* <------- 1.35% load penalty */
-    rv = pr->value;         /* <------ 57% load penalty */
-    prl = pr->left;         /* <------ 7.6% load penalty */
-    prr = pr->right;        /* <------ 7.7% load penalty */
+    size_t pl_index = pl - node_arr;
+    size_t pr_index = pr - node_arr;
+    lv = value_arr[pl_index];        /* <------- 8.2% load penalty */
+    pll = left_arr[pl_index];
+    plr = right_arr[pl_index];       /* <------- 1.35% load penalty */
+    rv = value_arr[pr_index];         /* <------ 57% load penalty */
+    prl = left_arr[pr_index];         /* <------ 7.6% load penalty */
+    prr = right_arr[pr_index];        /* <------ 7.7% load penalty */
     elementexchange = ((lv > rv) ^ dir);
     if (rightexchange)
       if (elementexchange)
@@ -186,14 +210,14 @@ Bimerge(root,spr_val,dir)
         pr = prl;
       }
   }
-  if ((root->left != NIL))
+  if ((left_arr[root_index] != NIL))
   { 
     int value;
-    rl = root->left;
-    rr = root->right;
-    value = root->value;
+    rl = left_arr[root_index];
+    rr = right_arr[root_index];
+    value = value_arr[root_index];
 
-    root->value=Bimerge(rl,value,dir);
+    value_arr[root_index]=Bimerge(rl,value,dir);
     spr_val=Bimerge(rr,spr_val,dir);
   }
   /*printf("exit bimerge %x\n", root);*/
@@ -211,23 +235,24 @@ Bisort(root,spr_val,dir)
   HANDLE *r;
   int val;
   /*printf("bisort %x\n", root);*/
-  if ((root->left == NIL))  /* <---- 8.7% load penalty */
+  size_t root_index = root - node_arr;
+  if ((left_arr[root_index] == NIL))  /* <---- 8.7% load penalty */
   { 
-    if (((root->value > spr_val) ^ dir))
+    if (((value_arr[root_index] > spr_val) ^ dir))
     {
       val = spr_val;
-      spr_val = root->value;
-      root->value =val;
+      spr_val = value_arr[root_index];
+      value_arr[root_index] =val;
     }
   }
   else 
   {
     int ndir;
-    l = root->left;
-    r = root->right;
-    val = root->value;
+    l = left_arr[root_index];
+    r = right_arr[root_index];
+    val = value_arr[root_index];
     /*printf("root 0x%x, l 0x%x, r 0x%x\n", root,l,r);*/
-    root->value=Bisort(l,val,dir);
+    value_arr[root_index]=Bisort(l,val,dir);
     ndir = !dir;
     spr_val=Bisort(r,spr_val,ndir);
     spr_val=Bimerge(root,spr_val,dir);
@@ -240,6 +265,12 @@ int main(int argc, char **argv) {
   HANDLE *h;
   int sval;
   int n;
+
+  // splitting
+  value_arr = (HANDLE*)malloc(sizeof(HANDLE) * MAX_COUNT);
+  left_arr = (HANDLE**)malloc(sizeof(HANDLE*) * MAX_COUNT);
+  right_arr = (HANDLE**)malloc(sizeof(HANDLE*) * MAX_COUNT);
+  node_arr = value_arr;
 
   n = dealwithargs(argc,argv);
 
