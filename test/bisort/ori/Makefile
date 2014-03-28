@@ -27,7 +27,10 @@ $(OBJS): $(OBJDIR)/%.o : %.c
 	@echo "Compiled "$<" successfully!"
 
 run: $(PROG)
-	./$(PROG) $(RUN_OPTIONS)
+	@./$(PROG) $(RUN_OPTIONS) > bisort.output
+	@diff bisort.output bisort.reference_output
+	@rm -f bisort.output
+	@echo "Result compare complete!"
 
 .PHONY: clean
 clean:
