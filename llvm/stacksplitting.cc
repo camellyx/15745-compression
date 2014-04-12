@@ -14,6 +14,7 @@
 #include <iostream>
 #include <string>
 #include <cstdlib>
+#include <vector>
 
 using namespace llvm;
 
@@ -21,6 +22,7 @@ namespace {
 
 class BDI_split : public ModulePass {
 private:
+   std::vector<Instruction*> inserted_ins;
 
 public:
 
@@ -54,8 +56,8 @@ public:
 
 				Type* array_type = ArrayType::get(struct_type->getStructElementType(i), alloca_type->getArrayNumElements() );
 
-				AllocaInst* ai = new AllocaInst(array_type, 0, field_name.c_str() );
-				//AllocaInst* ai = new AllocaInst(struct_type->getStructElementType(i), alloca_Ins->getArraySize(), field_name.c_str() );
+				AllocaInst* ai = new AllocaInst(array_type, 0, field_name.c_str(), BI);
+				inserted_ins.push_back(ai);
 				//BI->insertBefore(ai);
 			  }
 			  std::cout << "elements of struct: " << elementNum << std::endl;
@@ -65,6 +67,9 @@ public:
 
 	  }
 	}
+
+	for (int i = 0; i < inserted_ins.size(); i++)
+	  delete inserted_ins[i];
     return false;
   }
   
