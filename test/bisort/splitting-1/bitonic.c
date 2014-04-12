@@ -19,7 +19,7 @@ int flag=0,foo=0;
 
 // splitting
 #define NDEBUG
-#define MAX_COUNT 10000000
+size_t MAX_COUNT = 0;
 size_t count = 0;
 HANDLE *node_arr; // equal to first field: value_arr
 HANDLE *value_arr;
@@ -266,13 +266,14 @@ int main(int argc, char **argv) {
   int sval;
   int n;
 
+  n = dealwithargs(argc,argv);
+
   // splitting
+  MAX_COUNT = n;
   value_arr = (HANDLE*)malloc(sizeof(HANDLE) * MAX_COUNT);
   left_arr = (HANDLE**)malloc(sizeof(HANDLE*) * MAX_COUNT);
   right_arr = (HANDLE**)malloc(sizeof(HANDLE*) * MAX_COUNT);
   node_arr = value_arr;
-
-  n = dealwithargs(argc,argv);
 
   printf("Bisort with %d size of dim %d\n", n, NDim);
 

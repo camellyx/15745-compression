@@ -11,9 +11,11 @@ INCS=$(wildcard *.h)
 OBJS=$(SRCS:%.c=$(OBJDIR)/%.o)
 
 ifdef LARGE_PROBLEM_SIZE
-	RUN_OPTIONS = 3000000
+	# 5MB nodes
+	RUN_OPTIONS = 436907
 else
-	RUN_OPTIONS = 700000
+	# 3MB nodes
+	RUN_OPTIONS = 262144
 endif
 #include $(LEVEL)/MultiSource/Makefile.multisrc
 
@@ -27,11 +29,15 @@ $(OBJS): $(OBJDIR)/%.o : %.c
 	@echo "Compiled "$<" successfully!"
 
 run: $(PROG)
-	@./$(PROG) $(RUN_OPTIONS) > bisort.output
-	@diff bisort.output bisort.reference_output
-	@rm -f bisort.output
-	@echo "Result compare complete!"
+	@./$(PROG) $(RUN_OPTIONS) > bisort.$(RUN_OPTIONS).output
+	#@diff bisort.output bisort.reference_output
+	#@rm -f bisort.output
+	#@echo "Result compare complete!"
 
 .PHONY: clean
 clean:
 	rm -rf $(OBJS) $(OBJDIR) $(PROG)
+
+.PHONY: clear
+clear: clean
+	rm -rf *.output
