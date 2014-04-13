@@ -15,6 +15,7 @@
 #include <string>
 #include <cstdlib>
 #include <vector>
+#include <map>
 
 using namespace llvm;
 
@@ -22,7 +23,7 @@ namespace {
 
 class BDI_split : public ModulePass {
 private:
-   std::vector<Instruction*> inserted_ins;
+  std::map<Value*, std::vector<Value*> > struct_field_map;
 
 public:
 
@@ -42,8 +43,8 @@ public:
     for (Function::iterator FI = F->begin(), FE = F->end(); FI != FE; ++FI) {
       for (BasicBlock::iterator BI = FI->begin(), BE = FI->end(); BI != BE; ++BI) {
 		if (isa<llvm::AllocaInst>(BI) ) {
-		  AllocaInst* alloca_Ins = dyn_cast<AllocaInst>(BI);
-		  Type* alloca_type = alloca_Ins->getAllocatedType();
+		  AllocaInst* alloca_ins = dyn_cast<AllocaInst>(BI);
+		  Type* alloca_type = alloca_ins->getAllocatedType();
 		  if (alloca_type->isArrayTy() ) {
 			Type* struct_type = alloca_type->getArrayElementType();
 			if (struct_type->isStructTy() ) {
@@ -54,22 +55,38 @@ public:
 				std::cout << field_name << std::endl;
 				std::cout << alloca_type->getArrayNumElements() << std::endl;
 
-				Type* array_type = ArrayType::get(struct_type->getStructElementType(i), alloca_type->getArrayNumElements() );
+				Type* array_type =
+				  ArrayType::get(struct_type->getStructElementType(i),
+					  alloca_type->getArrayNumElements() );
 
-				AllocaInst* ai = new AllocaInst(array_type, 0, field_name.c_str(), BI);
-				inserted_ins.push_back(ai);
-				//BI->insertBefore(ai);
+				Instruction* ins_ptr = BI;
+
+				AllocaInst* ai = new AllocaInst(array_type, 0,
+					field_name.c_str(), ins_ptr);
+				struct_field_map[dyn_cast<Value>(BI)].push_back(dyn_cast<Value>(ai) );
 			  }
-			  std::cout << "elements of struct: " << elementNum << std::endl;
 			}
 		  }
 		}
 
+		if (isa<llvm::GetElementPtrInst>(BI) ) {
+		  std::cout << "find a getelementptrInst" << std::endl;
+		  GetElementPtrInst* getele_ins = dyn_cast<GetElementPtrInst>(BI);
+		  Value* ptr_op = getele_ins->getPointerOperand();
+
+		  if (struct_field_map.find(ptr_op) != struct_field_map.end() )
+			std::cout << "Found the operand!!" << std::endl;
+
+		}
 	  }
 	}
+	for (std::map<Value*, std::vector<Value*> >::iterator
+	  map_iter = struct_field_map.begin(); map_iter !=
+	  struct_field_map.end(); map_iter++) {
+	  std::cout << "elements of struct \"" << map_iter->first->getName().str()
+		<< "\": " << map_iter->second.size() << std::endl;
+    }
 
-	for (int i = 0; i < inserted_ins.size(); i++)
-	  delete inserted_ins[i];
     return false;
   }
   
