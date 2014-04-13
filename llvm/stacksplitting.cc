@@ -8,6 +8,7 @@
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/Constants.h"
+#include "llvm/IR/User.h"
 
 #include <ostream>
 #include <fstream>
@@ -75,6 +76,11 @@ public:
 		  Value* ptr_op = getele_ins->getPointerOperand();
 
 		  if (struct_field_map.find(ptr_op) != struct_field_map.end() ) {
+			ArrayRef<Value*> indices;
+			for (User::op_iterator idx_iter = getele_ins->op_begin(); idx_iter != getele_ins->op_end(); idx_iter++) {
+			  std::cout << idx_iter->get()->getName().str() << std::endl;
+			}
+			
 			std::cout << "Found the operand!!" << std::endl;
 			std::cout << "Has indices: " << getele_ins->getNumIndices() << std::endl;
 		  }

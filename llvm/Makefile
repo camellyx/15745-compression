@@ -9,6 +9,7 @@ stacksplitting.o: stacksplitting.cc
 
 run: stacksplitting.so
 	opt -load ./stacksplitting.so -split-stack test-m2r.bc -o test-out.bc
+	llvm-dis test-out.bc
 
 clean:
 	rm -f *.o *~ *.so
