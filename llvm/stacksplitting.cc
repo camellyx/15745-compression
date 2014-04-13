@@ -76,14 +76,18 @@ public:
 		  Value* ptr_op = getele_ins->getPointerOperand();
 
 		  if (struct_field_map.find(ptr_op) != struct_field_map.end() ) {
-			ArrayRef<Value*> indices;
+			std::vector<Value*> index_vec;
 			for (User::op_iterator idx_iter = getele_ins->op_begin(); idx_iter != getele_ins->op_end(); idx_iter++) {
 			  Value* index_ptr = idx_iter->get();
 			  if (isa<ConstantInt>(index_ptr) )
 				std::cout << dyn_cast<ConstantInt>(index_ptr)->getZExtValue() << std::endl;
 			  else
 				std::cout << index_ptr->getName().str() << std::endl;
+
+			  index_vec.push_back(index_ptr);
 			}
+
+			ArrayRef<Value*> testArr(index_vec);
 			
 			std::cout << "Found the operand!!" << std::endl;
 			std::cout << "Has indices: " << getele_ins->getNumIndices() << std::endl;
