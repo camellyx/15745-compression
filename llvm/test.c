@@ -1,4 +1,4 @@
-struct test {int crap; char dasdfas;};
+struct test {int crap; char shit;};
 
 
 int main () {
@@ -12,6 +12,7 @@ int main () {
   int i;
   for (i = 0; i < 10; i++) {
 	a[i].crap=i;
+	a[i].shit=i;
   }
 
   b = a + test1.crap;
@@ -22,6 +23,7 @@ int main () {
 
   for (i = 0; i < 10; i++) {
 	sum += a[i].crap;
+	sum += a[i].shit;
   }
 
   return sum;

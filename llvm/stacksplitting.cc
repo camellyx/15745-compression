@@ -74,8 +74,10 @@ public:
 		  GetElementPtrInst* getele_ins = dyn_cast<GetElementPtrInst>(BI);
 		  Value* ptr_op = getele_ins->getPointerOperand();
 
-		  if (struct_field_map.find(ptr_op) != struct_field_map.end() )
+		  if (struct_field_map.find(ptr_op) != struct_field_map.end() ) {
 			std::cout << "Found the operand!!" << std::endl;
+			std::cout << "Has indices: " << getele_ins->getNumIndices() << std::endl;
+		  }
 
 		}
 	  }
