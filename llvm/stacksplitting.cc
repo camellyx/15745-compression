@@ -78,7 +78,11 @@ public:
 		  if (struct_field_map.find(ptr_op) != struct_field_map.end() ) {
 			ArrayRef<Value*> indices;
 			for (User::op_iterator idx_iter = getele_ins->op_begin(); idx_iter != getele_ins->op_end(); idx_iter++) {
-			  std::cout << idx_iter->get()->getName().str() << std::endl;
+			  Value* index_ptr = idx_iter->get();
+			  if (isa<ConstantInt>(index_ptr) )
+				std::cout << dyn_cast<ConstantInt>(index_ptr)->getZExtValue() << std::endl;
+			  else
+				std::cout << index_ptr->getName().str() << std::endl;
 			}
 			
 			std::cout << "Found the operand!!" << std::endl;
