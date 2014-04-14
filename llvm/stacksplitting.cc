@@ -25,6 +25,7 @@ namespace {
 class BDI_split : public ModulePass {
 private:
   std::map<Value*, std::vector<Value*> > struct_field_map;
+  std::map<Value*, std::vector<Value*> > index_map;
 
 public:
 
@@ -88,7 +89,26 @@ public:
 			}
 
 			ArrayRef<Value*> testArr(index_vec);
-
+/* 
+			 Type * index_type = GetElementPtrInst::getIndexedType(getele_inst->getPointerOperandType(),testArr);
+			 if(index_type->isAggregateType()) {
+			   if(index_map.find(getele_inst->getPointerOperand()) != index_map.end() ) {
+				std::vector<Value*> temp = index_map[getele_inst->getPointerOperand()];
+			   unsigned start_in = 0;
+			   if(isa<ConstantInt>(index_vec[0]))
+				if(dyn_cast<ConstantInt>(index_vec[0])->getZExtValue() == 0) 
+				  start_in = 1;
+			   for(unsigned in = start_in; in < index_vec.size(); in++) {
+				temp.push_back(index_vec[in]);
+			   }
+			   index_map[dyn_cast<Value>(BI)] = temp;
+				}
+			 }
+			 else {
+			   //Get index vector from index_map[getele_ins->getPointerOperand()]
+			   //concatenate indices and create new getelementptr instruction
+			 }
+*/
 
 //  Just testing if indices are correctly assigned.
 			for (ArrayRef<Value*>::iterator arr_iter = testArr.begin(); arr_iter != testArr.end(); arr_iter++) {
@@ -105,7 +125,7 @@ public:
 //
 			Instruction* ins_ptr = BI;
 
-			GetElementPtrInst* new_getele_inst = GetElementPtrInst::Create(ptr_op, testArr, BI->getName().str() + "_new", ins_ptr);
+			//GetElementPtrInst* new_getele_inst = GetElementPtrInst::Create(ptr_op, testArr, BI->getName().str() + "_new", ins_ptr);
 			
 			std::cout << "Found the operand!!" << std::endl;
 			std::cout << "Has indices: " << getele_inst->getNumIndices() << std::endl;
