@@ -88,7 +88,20 @@ public:
 			}
 
 			ArrayRef<Value*> testArr(index_vec);
+
+
+/*  Just testing if indices are correctly assigned.
+			for (ArrayRef<Value*>::iterator arr_iter = testArr.begin(); arr_iter != testArr.end(); arr_iter++) {
+			  Value* index_ptr = *arr_iter;
+			  if (isa<ConstantInt>(index_ptr) )
+				std::cout << dyn_cast<ConstantInt>(index_ptr)->getZExtValue() << std::endl;
+			  else
+				std::cout << index_ptr->getName().str() << std::endl;
+
+			  index_vec.push_back(index_ptr);
+			}
 			
+*/
 			std::cout << "Found the operand!!" << std::endl;
 			std::cout << "Has indices: " << getele_ins->getNumIndices() << std::endl;
 		  }
