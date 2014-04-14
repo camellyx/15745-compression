@@ -40,6 +40,7 @@ public:
   }
 
   virtual bool runOnFunction(Function *F) {
+	std::map<Value *, std::vector<Value *>> index_map;
     // TODO: implement this.
     for (Function::iterator FI = F->begin(), FE = F->end(); FI != FE; ++FI) {
       for (BasicBlock::iterator BI = FI->begin(), BE = FI->end(); BI != BE; ++BI) {
@@ -83,12 +84,31 @@ public:
 				std::cout << dyn_cast<ConstantInt>(index_ptr)->getZExtValue() << std::endl;
 			  else
 				std::cout << index_ptr->getName().str() << std::endl;
-
 			  index_vec.push_back(index_ptr);
 			}
 
 			ArrayRef<Value*> testArr(index_vec);
-			
+			Type * index_type = getIndexedType(getele_ins->getPointerOperandType(),testArr);
+			if(index_type->isAggregateType()) {
+			  if(index_map.find(getele_ins->getPointerOperand()) != std::map<Value *, std::vector<Value *>>::end) 
+				 std::vector<Value*> temp = index_map[getele_ins->getPointerOperand()];
+				 unsigned start_in = 0;
+				 if(isa<ConstantInt>(index_vec[0]))
+				  if(dyn_cast<ConstantInt>(index_vec[0])->getZExtValue() == 0) 
+					start_in = 1;
+				 for(unsigned in = start_in; in < index_vec.size(); in++) {
+					temp.push_back(index_vec[in]);
+				  }
+				 index_map[dyn_cast<Value>(BI)] = temp;
+			}
+			else {
+			  //Get index vector from index_map[getele_ins->getPointerOperand()]
+			  //concatenate indices and create new getelementptr instruction
+			}
+
+				  
+				  
+			}
 			std::cout << "Found the operand!!" << std::endl;
 			std::cout << "Has indices: " << getele_ins->getNumIndices() << std::endl;
 		  }
