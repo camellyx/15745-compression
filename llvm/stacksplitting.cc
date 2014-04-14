@@ -77,7 +77,7 @@ public:
 
 		  if (struct_field_map.find(ptr_op) != struct_field_map.end() ) {
 			std::vector<Value*> index_vec;
-			for (User::op_iterator idx_iter = getele_inst->op_begin(); idx_iter != getele_inst->op_end(); idx_iter++) {
+			for (User::op_iterator idx_iter = getele_inst->idx_begin(); idx_iter != getele_inst->idx_end(); idx_iter++) {
 			  Value* index_ptr = idx_iter->get();
 /*			  if (isa<ConstantInt>(index_ptr) )
 				std::cout << dyn_cast<ConstantInt>(index_ptr)->getZExtValue() << std::endl;
