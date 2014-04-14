@@ -15,6 +15,6 @@ clean:
 	rm -f *.o *~ *.so
 
 debug:
-	gdb --args opt -load ./stacksplitting.so -split-stack test-m2r.bc
+	gdb --args opt -load ./stacksplitting.so -split-stack test-m2r.bc -o test-out.bc
 
 .PHONY: clean all run

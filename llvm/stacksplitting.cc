@@ -72,38 +72,43 @@ public:
 
 		if (isa<llvm::GetElementPtrInst>(BI) ) {
 		  std::cout << "find a getelementptrInst" << std::endl;
-		  GetElementPtrInst* getele_ins = dyn_cast<GetElementPtrInst>(BI);
-		  Value* ptr_op = getele_ins->getPointerOperand();
+		  GetElementPtrInst* getele_inst = dyn_cast<GetElementPtrInst>(BI);
+		  Value* ptr_op = getele_inst->getPointerOperand();
 
 		  if (struct_field_map.find(ptr_op) != struct_field_map.end() ) {
 			std::vector<Value*> index_vec;
-			for (User::op_iterator idx_iter = getele_ins->op_begin(); idx_iter != getele_ins->op_end(); idx_iter++) {
+			for (User::op_iterator idx_iter = getele_inst->op_begin(); idx_iter != getele_inst->op_end(); idx_iter++) {
 			  Value* index_ptr = idx_iter->get();
-			  if (isa<ConstantInt>(index_ptr) )
+/*			  if (isa<ConstantInt>(index_ptr) )
 				std::cout << dyn_cast<ConstantInt>(index_ptr)->getZExtValue() << std::endl;
 			  else
 				std::cout << index_ptr->getName().str() << std::endl;
-
+*/
 			  index_vec.push_back(index_ptr);
 			}
 
 			ArrayRef<Value*> testArr(index_vec);
 
 
-/*  Just testing if indices are correctly assigned.
+//  Just testing if indices are correctly assigned.
 			for (ArrayRef<Value*>::iterator arr_iter = testArr.begin(); arr_iter != testArr.end(); arr_iter++) {
 			  Value* index_ptr = *arr_iter;
+
 			  if (isa<ConstantInt>(index_ptr) )
 				std::cout << dyn_cast<ConstantInt>(index_ptr)->getZExtValue() << std::endl;
 			  else
 				std::cout << index_ptr->getName().str() << std::endl;
 
-			  index_vec.push_back(index_ptr);
+			  if (index_ptr->getType() == NULL)
+				std::cout << "CRAPPPPP" << std::endl;
 			}
+//
+			Instruction* ins_ptr = BI;
+
+			GetElementPtrInst* new_getele_inst = GetElementPtrInst::Create(ptr_op, testArr, BI->getName().str() + "_new", ins_ptr);
 			
-*/
 			std::cout << "Found the operand!!" << std::endl;
-			std::cout << "Has indices: " << getele_ins->getNumIndices() << std::endl;
+			std::cout << "Has indices: " << getele_inst->getNumIndices() << std::endl;
 		  }
 
 		}
