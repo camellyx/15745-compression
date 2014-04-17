@@ -1,0 +1,8 @@
+command: make <program>
+
+description:
+It will generate a program with a struct with <field1> and <field2>
+<program> <field1> <field2>
+---------------------------
+vanilla_1   int      int
+vanilla_2   int      char
