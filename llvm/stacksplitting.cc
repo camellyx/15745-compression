@@ -76,7 +76,7 @@ namespace {
 			  GetElementPtrInst* getele_inst = dyn_cast<GetElementPtrInst>(BI);
 			  Value* ptr_op = getele_inst->getPointerOperand();
 
-			  if (struct_field_map.find(ptr_op) != struct_field_map.end() || index_map.find(ptr_op) != index_map.end() ) {
+			  if (struct_field_map.find(ptr_op) != struct_field_map.end() && index_map.find(ptr_op) != index_map.end() ) {
 
 				std::vector<Value*> index_vec;
 				for (User::op_iterator idx_iter = getele_inst->idx_begin(); idx_iter != getele_inst->idx_end(); idx_iter++) {
