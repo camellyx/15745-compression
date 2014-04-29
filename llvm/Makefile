@@ -11,7 +11,7 @@ stacksplitting.o: stacksplitting.cc
 
 run: stacksplitting.so
 	opt -load ./stacksplitting.so -split-stack $(bench)-m2r.bc -o $(bench)-out.bc
-	llvm-dis test-out.bc
+	llvm-dis $(bench)-out.bc
 
 clean:
 	rm -f *.o *~ *.so
