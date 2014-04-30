@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
+#include <stdint.h>
 
 #ifndef SEED
 #define SEED 0
@@ -14,11 +14,47 @@
 #endif
 
 #if TYPE == 1
-  #define TYPE1 int32_t
-  #define TYPE2 int32_t
-#elif TYPE == 2
-  #define TYPE1 int32_t
+  #define TYPE1 int8_t
   #define TYPE2 int8_t
+#elif TYPE == 2
+  #define TYPE1 int8_t
+  #define TYPE2 int16_t
+#elif TYPE == 3
+  #define TYPE1 int8_t
+  #define TYPE2 intptr_t
+#elif TYPE == 4
+  #define TYPE1 int8_t
+  #define TYPE2 int32_t
+#elif TYPE == 5
+  #define TYPE1 int8_t
+  #define TYPE2 int64_t
+#elif TYPE == 6
+  #define TYPE1 int8_t
+  #define TYPE2 float
+#elif TYPE == 7
+  #define TYPE1 int8_t
+  #define TYPE2 double
+#elif TYPE == 8
+  #define TYPE1 int32_t
+  #define TYPE2 float
+#elif TYPE == 9
+  #define TYPE1 int32_t
+  #define TYPE2 double
+#elif TYPE == 10
+  #define TYPE1 int32_t
+  #define TYPE2 intptr_t
+#elif TYPE == 11
+  #define TYPE1 float
+  #define TYPE2 double
+#elif TYPE == 12
+  #define TYPE1 int64_t
+  #define TYPE2 double
+#elif TYPE == 13
+  #define TYPE1 int64_t
+  #define TYPE2 float
+#elif TYPE == 14
+  #define TYPE1 int64_t
+  #define TYPE2 int32_t
 #endif
 
 struct TwoFields {
@@ -33,6 +69,8 @@ Pattern pattern = STREAM;
 
 size_t range1 = 16;
 size_t range2 = 16;
+long long offset1= 0;
+long long offset2= 0;
 double sizeInMB = 2.5;
 size_t size = 312500000;
 
@@ -51,8 +89,9 @@ int main(int argc, char **argv) {
   printf("size: %d %d \n", sizeof(TYPE1), sizeof(TYPE2));
   size_t i;
   for (i=0; i<size; i++) {
-    data[i].f1 = rand() % range1;
-    data[i].f2 = rand() % range2;
+    data[i].f1 = offset1 + (double)rand() / ((double)RAND_MAX/range1);
+    data[i].f2 = offset2 + (double)rand() / ((double)RAND_MAX/range2);
+    printf("%d,%d\n",data[i].f1,data[i].f2);
   }
   printf("Initialization done!\n");
 
@@ -92,6 +131,7 @@ void usage(char *program) {
       "  -i  --access iter            Number of acccesses to data DEFAULT=1000000\n"
       "  -a  --affinity affinity      Probability that two fields are accessed together. (Affinity knob) DEFAULT=1\n"
       "  -r  --range range1,range2    Maximum of the value. (Compressibility knob) DEFAULT=16,16\n"
+      "  -f  --offset offset1,offset2 Offset of the value. (Compressibility knob) DEFAULT=0,0\n"
       //      "  -t  --type int/char          Type of the value. (Compressibility knob DEFAULT=int)\n"
       "  -s  --size size              Size of the value. (Size knob) DEFAULT=2.5MB\n"
       "  -p  --pattern stream/random  Access pattern. (Pattern knob) DEFAULT=stream\n"
@@ -105,6 +145,7 @@ void parse_args(int argc, char **argv) {
     {"access", 1, 0, 'i'},
     {"affinity", 1, 0, 'a'},
     {"range", 1, 0, 'r'},
+    {"offset", 1, 0, 'f'},
     //    {"type", 1, 0, 't'},
     {"size", 1, 0, 's'},
     {"pattern", 1, 0, 'p'},
@@ -112,7 +153,7 @@ void parse_args(int argc, char **argv) {
     {0, 0, 0, 0}
   };
 
-  while ((opt = getopt_long(argc, argv, "i:a:r:s:p:?h", long_opts, NULL)) != EOF) {
+  while ((opt = getopt_long(argc, argv, "i:a:r:f:s:p:?h", long_opts, NULL)) != EOF) {
     switch (opt) {
       case 'i':
         iter = atoll(optarg);
@@ -132,6 +173,12 @@ void parse_args(int argc, char **argv) {
         if (sscanf(optarg, "%u,%u", &range1, &range2) == 2) {
         } else {
           printf("Error: Unable to parse range: %s \n", optarg);
+          exit(EXIT_SUCCESS);
+        }
+      case 'f':
+        if (sscanf(optarg, "%lld,%lld", &offset1, &offset2) == 2) {
+        } else {
+          printf("Error: Unable to parse offset: %s \n", optarg);
           exit(EXIT_SUCCESS);
         }
         break;
