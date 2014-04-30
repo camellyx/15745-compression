@@ -54,7 +54,12 @@ a structure with multiple fields into arrays comprising the different fields in
 the original data structure. By placing all the data from the same field across
 all nodes or structures in a single array.
 
-Figure .. illustrates data splitting and the compressibility benefits. 
+\begin{figure}[htb]
+\centering
+\includegraphics[trim=0mm 0mm 0mm 0mm,clip,width=1\linewidth]{figs/pic1.pdf}
+\caption{Benefits of data splitting and cache compression.}
+\label{fig:benefit}
+\end{figure}
 
 There are multiple ways in which splitting data structures may improve
 performance. If the program only accesses a few fields frequently at any given
@@ -71,5 +76,6 @@ data layouts that are more amenable to data compression.
 Section details all aspects of our optimization implementation in LLVM. Section
 describes the evaluation details including our simulation infrastructure and
 testing benchmark.  Section contains a detailed evaluation of our performance
-results and experiments.  We discuss related work and future work in Sections ..
-and .. and conclude in Section ..
+results and experiments.  We discuss related work and future work in
+Section~\ref{sec:rel}
+and Section~\ref{sec:fut} and conclude in Section~\ref{sec:conc}
