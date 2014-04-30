@@ -1,0 +1,28 @@
+\section{Related Works}
+\label{sec:rel}
+
+Gennady Pekhimenko et. al proposed Base-Delta-Immediate Compression[4]. The key
+idea in Base-Delta-Immediate Compression is that data in any cache frequently
+have low dynamic range and hence can be compressed with a common base and small
+variations or deltas from this base. The authors observe that for many cache
+lines, multiple bases are required for efficient compressing due to multi-field
+data structures. Trishul Chilimbi et al. proposed Cache-Conscious Structure
+Layout[3]. The key idea in Cache-Conscious Structure Layout is that by coloring
+and clustering pointers, pointers with spatial locality are grouped together
+into a single cache line which improves data reuse. Trishul Chilimbi et al. take
+the concept further in Cache-Conscious Structure Definition[2]. In
+Cache-Conscious Structure Definition, fields within a structure are further
+split into different fields which are reordered to further increase cache
+locality and data reuse. Recently, Chris Lattner et al. proposed Automatic Pool
+Allocation[5], which segregates heap-based data into separate memory pools and
+controls the internal data layout with heuristics. The key idea is to analyze
+heap allocated data with a points-to graph and a call graph. Grouping data with
+spatial locality together, improves performance. Finally, Stephen Curial
+proposed MPADS: Memory-Pooling-Assisted Data Splitting[1], which analyzes
+affinity (locality) between fields in a structure and splits data fields based
+on their affinity to reduce memory footprint and improve application’s
+performance. Fields with low affinity are separated into different pools while
+fields with high affinity are bundled together at the granularity of each
+element. Memory-Pooling-Assisted Data Splitting improves data reuse by pooling
+fields with high affinity while improving memory efficiency by splitting
+isolated fields.
