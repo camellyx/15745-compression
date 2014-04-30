@@ -7,6 +7,7 @@
 #endif
 
 #ifndef TYPE
+// default type
 #define TYPE 1
 #endif
 
@@ -72,7 +73,7 @@ int main(int argc, char **argv) {
     }
     if (pattern == STREAM) {
       index = (index++) % size;
-    } else {
+    } else if (pattern == RANDOM) {
       index = rand() % size;
     }
   }
@@ -107,7 +108,7 @@ void parse_args(int argc, char **argv) {
     {0, 0, 0, 0}
   };
 
-  while ((opt = getopt_long(argc, argv, "a:r:t:s:p:?h", long_opts, NULL)) != EOF) {
+  while ((opt = getopt_long(argc, argv, "i:a:r:s:p:?h", long_opts, NULL)) != EOF) {
     switch (opt) {
       case 'i':
         iter = atoll(optarg);
@@ -154,8 +155,6 @@ void parse_args(int argc, char **argv) {
           pattern = STREAM;
         } else if (strcmp(optarg, "random") == 0) {
           pattern = RANDOM;
-          printf("Unimplemented pattern: %s \n", optarg);
-          exit(EXIT_SUCCESS);
         } else {
           printf("Error: Unknown pattern: %s \n", optarg);
           exit(EXIT_SUCCESS);
