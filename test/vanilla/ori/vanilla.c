@@ -1,6 +1,8 @@
 #include <getopt.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <ctype.h>
 
 #ifndef SEED
 #define SEED 0
@@ -12,11 +14,11 @@
 #endif
 
 #if TYPE == 1
-  #define TYPE1 int
-  #define TYPE2 int
+  #define TYPE1 int32_t
+  #define TYPE2 int32_t
 #elif TYPE == 2
-  #define TYPE1 int
-  #define TYPE2 char
+  #define TYPE1 int32_t
+  #define TYPE2 int8_t
 #endif
 
 struct TwoFields {
@@ -72,7 +74,9 @@ int main(int argc, char **argv) {
       }
     }
     if (pattern == STREAM) {
-      index = (index++) % size;
+      //index = (index++) % size;
+	  index ++;
+	  index %= size;
     } else if (pattern == RANDOM) {
       index = rand() % size;
     }
@@ -125,7 +129,7 @@ void parse_args(int argc, char **argv) {
         }
         break;
       case 'r':
-        if (sscanf(optarg, "%Iu,%Iu", &range1, &range2) == 2) {
+        if (sscanf(optarg, "%u,%u", &range1, &range2) == 2) {
         } else {
           printf("Error: Unable to parse range: %s \n", optarg);
           exit(EXIT_SUCCESS);
