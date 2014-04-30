@@ -15,7 +15,7 @@ efﬁcient compressed format. It can be applied using software, hardware or a
 combination of both. A key beneﬁt of compression is the increased effective
 storage capacity but it also helps reduce off-chip bandwidth and memory trafﬁc
 by sending and receiving data in the compressed format. Compression algorithms
-like Lempel-Ziv [7] and Base-Delta-Immediate Compression [4] when implemented in
+like Lempel-Ziv~\cite{lemp-ziv} and Base-Delta-Immediate Compression~\cite{bdi} when implemented in
 hardware could potentially improve code performance by reducing the number of
 long latency accesses to the main memory. There are also potentially significant
 power savings by keeping more data in the cache. 
@@ -64,7 +64,7 @@ working set size, reduces the memory traffic, reduces the number of capacity
 misses and does not pollute the cache. Splitting data also creates data streams
 that can be prefetched by hardware prefetchers. Most hardware prefetchers can
 prefetch from multiple data streams simultaneously and by making the access
-pattern more regular, the prefetch accuracy could be potentially higher [1].
+pattern more regular, the prefetch accuracy could be potentially higher~\cite{mpads}.
 Here, we implement and evaluate the benefits of data splitting in generating
 data layouts that are more amenable to data compression.
 
