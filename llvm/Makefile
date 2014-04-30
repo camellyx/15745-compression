@@ -11,7 +11,10 @@ stacksplitting.o: stacksplitting.cc
 
 run: stacksplitting.so
 	opt -load ./stacksplitting.so -split-stack $(bench)-m2r.bc -o $(bench)-out.bc
+	opt -std-compile-opts $(bench)-out.bc -o $(bench)-final.bc
 	llvm-dis $(bench)-out.bc
+	llc $(bench)-final.bc
+	gcc $(bench)-final.s -o $(bench)-final
 
 clean:
 	rm -f *.o *~ *.so

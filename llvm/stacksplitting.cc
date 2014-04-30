@@ -93,7 +93,7 @@ namespace {
 				}
 
 				ArrayRef<Value*> indexArr(index_vec);
-				
+
 				/* Assuming we have at most 1 level of struct which has only premitive types and this is the leaf node
 				 * then, we should use the last index to find new ptr and use the first index as the new index
 				 */
@@ -152,48 +152,48 @@ namespace {
 				  }
 				  index_map[BI] = new_index;
 				}
-			  
+
 				/*
-				Type * index_type = GetElementPtrInst::getIndexedType(getele_inst->getPointerOperandType(),indexArr);
-				
-				std::vector<Value*> temp;
-				  
-				if(index_map.find(getele_inst->getPointerOperand()) != index_map.end() )
-				  temp = index_map[getele_inst->getPointerOperand()];
-				
-				unsigned start_in = 0;
-				if(GetElementPtrInst::getIndexedType(getele_inst->getPointerOperandType(), ArrayRef<Value*>(index_vec[0]) )->isAggregateType() ) {
-				  start_in = 1;
-				  std::cout << "Yeah!!!" << std::endl;
-				}
-				for(unsigned in = start_in; in < index_vec.size(); in++)
-				  temp.push_back(index_vec[in]);
+				   Type * index_type = GetElementPtrInst::getIndexedType(getele_inst->getPointerOperandType(),indexArr);
 
-				if(index_type->isAggregateType()) // Not a leaf
-				  index_map[dyn_cast<Value>(BI)] = temp;
-				else { // Is a leaf node
-				  assert(isa<ConstantInt>( temp.back() ) );
-				  int field_idx = dyn_cast<ConstantInt>(temp.back() )->getZExtValue();
+				   std::vector<Value*> temp;
 
-				  std::cout << "root_ptr:" << root_map[ptr_op]->getName().str() << "\tfield_idx: " << field_idx << std::endl;
-				  std::cout << "number of indices: " << temp.size() << std::endl;
-				  for (int i = 0; i < temp.size(); i++) {
-					if (isa<ConstantInt>(temp[i]) )
-					  std::cout << dyn_cast<ConstantInt>(temp[i])->getZExtValue() << " ";
-					else
-					  std::cout << temp[i]->getName().str() << " ";
-				  }
-				  
-				  std::cout << std::endl;
+				   if(index_map.find(getele_inst->getPointerOperand()) != index_map.end() )
+				   temp = index_map[getele_inst->getPointerOperand()];
 
-				  Value* new_ptr = struct_field_map[root_map[ptr_op]][field_idx];
-				  temp.pop_back();
-				  ArrayRef<Value*> indexArr_new(temp);
+				   unsigned start_in = 0;
+				   if(GetElementPtrInst::getIndexedType(getele_inst->getPointerOperandType(), ArrayRef<Value*>(index_vec[0]) )->isAggregateType() ) {
+				   start_in = 1;
+				   std::cout << "Yeah!!!" << std::endl;
+				   }
+				   for(unsigned in = start_in; in < index_vec.size(); in++)
+				   temp.push_back(index_vec[in]);
 
-				  GetElementPtrInst* new_getele_inst = GetElementPtrInst::Create(new_ptr, indexArr_new, BI->getName().str() + "_new", BI);
-				}
-				
-				*/
+				   if(index_type->isAggregateType()) // Not a leaf
+				   index_map[dyn_cast<Value>(BI)] = temp;
+				   else { // Is a leaf node
+				   assert(isa<ConstantInt>( temp.back() ) );
+				   int field_idx = dyn_cast<ConstantInt>(temp.back() )->getZExtValue();
+
+				   std::cout << "root_ptr:" << root_map[ptr_op]->getName().str() << "\tfield_idx: " << field_idx << std::endl;
+				   std::cout << "number of indices: " << temp.size() << std::endl;
+				   for (int i = 0; i < temp.size(); i++) {
+				   if (isa<ConstantInt>(temp[i]) )
+				   std::cout << dyn_cast<ConstantInt>(temp[i])->getZExtValue() << " ";
+				   else
+				   std::cout << temp[i]->getName().str() << " ";
+				   }
+
+				   std::cout << std::endl;
+
+				   Value* new_ptr = struct_field_map[root_map[ptr_op]][field_idx];
+				   temp.pop_back();
+				   ArrayRef<Value*> indexArr_new(temp);
+
+				   GetElementPtrInst* new_getele_inst = GetElementPtrInst::Create(new_ptr, indexArr_new, BI->getName().str() + "_new", BI);
+				   }
+
+				 */
 
 				//  Just testing if indices are correctly assigned.
 				for (ArrayRef<Value*>::iterator arr_iter = indexArr.begin(); arr_iter != indexArr.end(); arr_iter++) {
@@ -207,7 +207,7 @@ namespace {
 				  if (index_ptr->getType() == NULL)
 					std::cout << "CRAPPPPP" << std::endl;
 				}
-				
+
 				//GetElementPtrInst* new_getele_inst = GetElementPtrInst::Create(ptr_op, testArr, BI->getName().str() + "_new", ins_ptr);
 
 				std::cout << "Found the operand!!" << std::endl;
@@ -217,24 +217,52 @@ namespace {
 			}
 		  }
 		}
-		
+
 		std::cout << "index_map size: \"" << index_map.size() << std::endl;
-		
+
 		for (std::map<Value*, Value*>::iterator map_iter = leaf_map.begin(); map_iter != leaf_map.end(); map_iter++) {
 		  std::cout << "deleting instruction: \"" << map_iter->first->getName().str() << std::endl;
 		  BasicBlock::iterator BI (dyn_cast<Instruction>(map_iter->first) );
 		  ReplaceInstWithInst(BI->getParent()->getInstList(), BI, dyn_cast<Instruction>(map_iter->second) );
 		}
-		
-		for (std::map<Value*, Value*>::iterator map_iter = index_map.begin(); map_iter != index_map.end(); map_iter++) {
-		  std::cout << "deleting instruction: \"" << map_iter->first->getName().str() << std::endl;
-		  dyn_cast<Instruction>(map_iter->first)->eraseFromParent();
+		leaf_map.clear();
+
+		while (index_map.size() != 0) {
+		  for (std::map<Value*, Value*>::iterator map_iter = index_map.begin(); map_iter != index_map.end(); map_iter++) {
+			assert(isa<GetElementPtrInst>(map_iter->first) );
+			bool no_use = true;
+
+			std::cout << "index_map.size(): " << index_map.size() << std::endl;
+			if (index_map.size() > 1) {
+			  for (std::map<Value*, Value*>::iterator inner_iter = index_map.begin(); inner_iter != index_map.end(); inner_iter++) {
+				assert(isa<GetElementPtrInst>(inner_iter->first) );
+				if(inner_iter->first == map_iter->first)
+				  continue;
+
+				if (dyn_cast<GetElementPtrInst>(inner_iter->first)->getPointerOperand() == map_iter->first) {
+				  no_use = false;
+				  break;
+				}
+			  }
+			}
+
+			if (no_use) {
+			  std::cout << "deleting instruction: " << map_iter->first->getName().str() << std::endl;
+			  dyn_cast<Instruction>(map_iter->first)->eraseFromParent();
+			  index_map.erase(map_iter);
+			  map_iter = index_map.begin();
+			}
+			if (index_map.empty() )
+			  break;
+		  }
 		}
 
 		for (std::map<Value*, std::vector<Value*> >::iterator map_iter = struct_field_map.begin(); map_iter != struct_field_map.end(); map_iter++) {
-		  std::cout << "deleting instruction: \"" << map_iter->first->getName().str() << std::endl;
+		  std::cout << "deleting instruction: " << map_iter->first->getName().str() << std::endl;
 		  dyn_cast<Instruction>(map_iter->first)->eraseFromParent();
 		}
+		struct_field_map.clear();
+
 		return false;
 	  }
 

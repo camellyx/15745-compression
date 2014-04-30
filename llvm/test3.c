@@ -1,4 +1,5 @@
 #include <malloc.h>
+#include <stdio.h>
 
 struct test {int crap; char shit;};
 
@@ -34,6 +35,8 @@ int main () {
 	sum += c[i];
   }
 
-  return sum;
+  printf("sum: %d\n", sum);
+
+  return 0;
 
 }
