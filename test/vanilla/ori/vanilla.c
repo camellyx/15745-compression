@@ -91,7 +91,6 @@ int main(int argc, char **argv) {
   for (i=0; i<size; i++) {
     data[i].f1 = offset1 + (double)rand() / ((double)RAND_MAX/range1);
     data[i].f2 = offset2 + (double)rand() / ((double)RAND_MAX/range2);
-    printf("%d,%d\n",data[i].f1,data[i].f2);
   }
   printf("Initialization done!\n");
 
