@@ -28,20 +28,38 @@ increases, the miss rate increases when data splitting is employed. This is
 because, the benefits from locality outweigh the compression benefits for all
 cases except when there is little or no affinity between the fields. The effect
 is further exacerbated by the lack of reuse in the data since the access pattern
-is random. Figure shows the variation in compressibility with differing dynamic
-ranges. And finally, we evaluate the impact of our optimization for different
-field types. We use different combinations of char, int, float and pointer and
-illustrate the difference in compressibility and cache utilization when using
-data splitting across different field types. Figure shows that the impact of
-data splitting is greatest with disparate data fields like pointer and char
-types in the same data structure. Table~\ref{tbl:field-combinations} maps the
-different data points in the graph to the corresponding field combinations. 
+is random. Figure~\ref{fig:range} shows the variation in compressibility with
+differing dynamic ranges. And finally, we evaluate the impact of our
+optimization for different field types. We use different combinations of char,
+int, float and pointer and illustrate the difference in compressibility and
+cache utilization when using data splitting across different field types.
+Figure~\ref{fig:type} shows that the impact of data splitting is greatest with
+disparate data fields like pointer and char types in the same data structure.
+Table~\ref{tbl:field-combinations} maps the different data points in the graph
+to the corresponding field combinations. 
 
 \begin{figure}[htb]
 \centering
 \includegraphics[trim=0mm 0mm 0mm 0mm,clip,width=1\linewidth]{figs/figure.pdf}
-\caption{Effective compression ratio and cache misses per kilo-instructions when varying the affinity value.}
+\caption{Effective compression ratio and cache misses per kilo-instructions when
+varying the affinity value.}
 \label{fig:affinity}
+\end{figure}
+
+\begin{figure}[htb]
+\centering
+\includegraphics[trim=0mm 0mm 0mm 0mm,clip,width=1\linewidth]{figs/figure3.pdf}
+\caption{Effective compression ratio and cache misses per kilo-instructions when
+varying the dynamic range.}
+\label{fig:range}
+\end{figure}
+
+\begin{figure}[htb]
+\centering
+\includegraphics[trim=0mm 0mm 0mm 0mm,clip,width=1\linewidth]{figs/figure4.pdf}
+\caption{Effective compression ratio and cache misses per kilo-instructions when
+varying the field types.}
+\label{fig:type}
 \end{figure}
 
 \begin{table}[htb]
