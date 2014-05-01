@@ -1,4 +1,6 @@
 \section{Conclusion}
 \label{sec:conc}
+Cache compression is an effective technique to improve cache utilization and reduce the number of off-chip memory accesses. Consequently, it is potentially useful in reducing the energy consumed and the processor performance. The compressibility of data in the cache is, however, limited by the dynamic range of data in the cache lines. In this project, we try to improve the compressibility of data by splitting different fields in an array of structs and pooling each field in a separate array. The compressibility is improved by placing similar data types within the same cache line. We implemented this optimization in a compiler and demonstrate the compressibility and cache utilization benefits. We also evaluated the different trade-offs and limitations of this optimization by varying different parameters like locality, compressibility, field affinity and data set size in a customized micro-benchmark. 
+The most challenging part of this project was implementing the data splitting optimization. A versatile framework to perform this optimization involved handling a lot of corner cases and many safety checks. All of the team members contributed equally to this work.  
 
 
