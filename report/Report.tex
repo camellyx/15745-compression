@@ -1,103 +1,41 @@
 \documentclass[10pt,twocolumn]{article}
 
+\usepackage{pslatex}
 \usepackage{times}
 \usepackage{fullpage}
+\usepackage{graphicx}
 
 \renewcommand*\familydefault{times}
 
+\newcommand{\squishlist}{
+\begin{list}{$\bullet$}
+{ \setlength{\itemsep}{0pt} \setlength{\parsep}{0pt}
+\setlength{\topsep}{3pt} \setlength{\partopsep}{0pt}
+\setlength{\listparindent}{-2pt}
+\setlength{\itemindent}{-5pt}
+\setlength{\leftmargin}{0.75em} \setlength{\labelwidth}{0em}
+\setlength{\labelsep}{0.5em} } } 
+\newcommand{\squishend}{
+\end{list} }
+
 \begin{document}
 
-\title{\bf Title}
-\author{Paper \# 123}
+\title{\bf Compiler Support for Cache Compression}
+\author{Hongyi Xin, Nandita Vijaykumar, Yixin Luo}
 \date{}
 \maketitle
 \thispagestyle{empty}
 
-\begin{abstract}
-Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.
-\end{abstract}
 
-\section{Introduction}
+\input{abstract}
 
-Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.
-
-Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-Lorem ipsum lorem ipsum.
-
-Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum
-lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.
+\input{intro}
+\input{meth}
+\input{exp}
+\input{eval}
+\input{related}
+\input{conc}
+\input{fut}
 
 
 \bibliography{refs}

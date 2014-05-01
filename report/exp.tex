@@ -1,0 +1,91 @@
+\section{Experimental Setup}
+\label{sec:exp}
+
+We use LLVM to implement our proposed optimizations. We also instrumented
+Valgrind to evaluate the performance impact of our optimizations.
+
+\subsection{LLVM}
+\label{sec:exp-llvm}
+
+We implemented our optimization pass to perform data splitting using LLVM
+version 3.4~\cite{llvm}. We do not use any pre-existing libraries or optimization tools
+to implement our optimization. 
+
+\subsection{Valgrind}
+\label{sec:exp-val}
+
+Valgrind is an instrumentation framework for building dynamic analysis tools. We
+evaluate the impact of our optimizations using the cachegrind tool in Valgrind.
+Cachegrind simulates how programs interacts with a machine's cache hierarchy. We
+altered Valgrind to dynamically compress data using the Base-Delta-Immediate
+Compression algorithm while running the program and generate cache hit rates and
+data compressibility. 
+
+\subsection{Benchmark}
+\label{sec:exp-ben}
+
+In order to evaluate our optimization we wrote a versatile micro-benchmark {\em
+structbench}, to enable us to profile the benefits of splitting under different
+program behaviors. {\em Structbench} allocates an array of structures in the
+{\em stack}, which contains two fields. This micro-benchmark allows us to
+specify as input the desired program behaviors that affects benefit for {\em
+splitting} and {\em cache compression} including:
+
+\squishlist
+
+\item Field types -- specifies the data types of the two fields of the data
+structure. This can affect the benefit we get from {\em splitting} because of
+how data is laid out in c/c++ programs. If the sizes of the two fields are
+different, unused memory can be inserted into the two fields to ensure the
+alignment for the larger field of the two, resulting in internal fragmentation
+in the data structure. However, if we split the array of two-field structures
+into two arrays, all fields can be laid out contiguously resulting in no
+internal fragmentation. This may greatly improve performance of the program
+because of the reduced memory footprint potentially making the entire data
+structure fit in the processor cache. This can also indirectly affect the
+benefit from {\em cache compression} because the value range of the fields is
+usually related to the type of the field. For example, an integer field tends to
+have values close to zero, while a pointer fields tend to have values relatively
+close to each other.
+
+\item Affinity -- specifies the probability of two fields being accessed
+together. A higher affinity can potentially negatively affect the benefit we get
+from {\em splitting}. A higher affinity indicates that the two fields are more
+likely to be accessed together, increasing the spatial locality of the two
+fields. However, splitting the data structure breaks the spatial locality.. This
+is because the two fields, which were previously located next to each other in
+the same cache line, are now separated into two arrays that are distant from
+each other.
+
+\item Offset and range -- specifies the offsets of the two fields, and their
+ranges compared to their offsets. The benefit from compression can be negatively
+impacted if the two fields have offsets that are different from each other, even
+if both fields have small value ranges. This is because the two fields, before
+splitting, were stored in the same cache line. If the two fields have values
+very different from each other, the cache line storing the data structure will
+have large dynamic range, making it less compressible. However, if we split the
+two fields into two separate arrays, the two fields are not intermingled in the
+same cache line. As such, splitting can improve the benefit from cache
+compression if the offsets of the two fields are different.
+
+\item Size -- specifies the size of the array. This can inflate or deflate the
+benefit we get from both splitting and compression. As described above,
+splitting and compression can both potentially help reduce the memory footprint
+of the program. This can improve performance because of the reduced memory
+accesses. If the size of the array is tuned such that the memory footprint
+before splitting and compression, does not fit in the processor cache, but fits
+after splitting and compression, the benefit from splitting and compression can
+be substantially increased.
+
+\item Access pattern -- specifies the access pattern of the array, ie. whether
+the pattern is streaming or random. This can inflate or deflate the benefit we
+get from both splitting and compression. This again reduces the memory footprint
+of the program, potentially enabling it to fit in the cache. The access pattern
+determines if the data is reused or not during the program execution. If the
+data is less reused and the data fits in the cache after splitting and
+compression, the original program may access memory very frequently, while the
+program with data splitting and compression may not.
+
+\squishend
+
+

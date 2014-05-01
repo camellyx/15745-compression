@@ -1,0 +1,24 @@
+\begin{abstract}
+
+The huge growing performance gap between modern processors and memory ( i.e. the
+so called memory wall) is a significant barrier that limits system performance
+and hardware caches help mitigate this problem. Sophisticated techniques are
+needed now more than ever to better utilize the cache. Cache compression is a
+technique that can increase effective cache capacity and reduce misses, improve
+performance, and potentially reduce system energy. Hardware compression
+algorithms need to be simple in order to reduce the performance overhead as well
+as the implementation complexity. The effectiveness of these algorithms are
+limited by the layout and range of data in memory. 
+
+The aim of this project is to implement and evaluate compiler optimizations to
+improve compressibility of applications’ data in the memory hierarchy.
+Specifically we evaluate data structure splitting as a compiler technique to
+place data with low relative dynamic range contiguously in memory, thereby
+increasing the potential compression ratio when these algorithms are employed.
+In this project we implement data structure splitting in LLVM and evaluate the
+benefits of our optimization using custom benchmarks. We also explore the
+performance impact of this optimization for applications with different data
+structure types and memory access patterns and the interaction between cache
+locality and data compressibility.
+
+\end{abstract}

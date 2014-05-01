@@ -1,0 +1,59 @@
+\section{Methodology and Implementation}
+\label{sec:meth}
+
+There are three common methods to split structures~\cite{mpads} : { \em affinity based
+splitting},  { \em frequency-based splitting} and \em {maximal splitting}. {\em
+Affinity-based splitting} typically requires a profiling run to analyze and
+determine the affinity of the fields in a structure. Ideally the high affinity
+fields should be grouped together while splitting, to ensure that there is no
+loss in locality benefits. The structure is then broken down based on the field
+affinity. {\em Frequency-based splitting} also needs information about how often
+each field is accessed and this can be obtained from a profile or memory trace.
+The fields are grouped into frequently-accessed fields, known as hot fields and
+infrequently-accessed fields, or cold fields. The structure is split to separate
+the {\em hot} and {\em cold fields}. {\em Maximal splitting} does not group any
+of the fields in a structure and completely separates all the fields. We
+evaluate the impact of splitting and compression with different access patterns,
+frequencies (hot vs. cold fields) across a range of cache locality. Due to time
+and space constraints we only evaluate maximal splitting. 
+
+Our optimization algorithm functions as follows:
+
+\squishlist
+
+\item Identify all instructions creating arrays of structs.
+
+\item Check if the the structure should be split (currently we use an input file).
+Identify the fields in the struct and store the fields and the instruction
+generating the fields in a dictionary.
+
+\item Traverse the instruction list, and identify accesses to the data structure. In
+LLVM, data structures are accessed using pointers. Some of these are
+‘intermediate’ pointers and others are ‘leaf’  pointers which actually point to
+the data being accessed.
+
+\item Create a tree from different levels of intermediate pointers and corresponding
+leaf pointers.
+
+\item Traverse the pointer tree and compute the corresponding pointers to the new
+split arrays.
+
+\item Replace each instruction that generates a pointer with a newly created
+instruction that generates the new corresponding pointer as determined above.
+
+\item Replace all uses of a leaf pointer with that of the new leaf pointer
+instruction.
+
+\item Traverse the pointer dependence tree above in reverse order and delete all the
+old instructions. This is done to ensure that we do not delete an instruction
+while it is still being used.
+
+\squishend
+
+Our implementation algorithm ensures that all pointer references at any level of
+the overall structure will be redirected to the new split arrays correctly. We
+also coalesce multiple pointer computations to reduce the number of these
+instructions in generated program. The framework also allows for multiple levels
+of nesting with the data structure and enables splitting structures allocated in
+the stack, heap as well as global structures. We, however, limit our evaluation
+to data structures with a single level of nesting. 
