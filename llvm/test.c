@@ -4,8 +4,8 @@ struct test {int crap; char shit;};
 
 int main () {
 
-//  struct test a[10];
-  struct test* a = malloc(sizeof(struct test)*10);
+  struct test a[10];
+//  struct test* a = malloc(sizeof(struct test)*10);
   struct test test1;
   
   struct test* b;

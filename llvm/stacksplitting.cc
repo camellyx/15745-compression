@@ -26,7 +26,7 @@ namespace {
 
   class BDI_split : public ModulePass {
 	private:
-	  std::map<Value*, std::vector<Value*> > struct_field_map;
+	  std::map<Value*, std::vector<Value*> > struct_field_map; //tracks old and new allocas
 	  std::map<Value*, Value*> index_map;
 	  std::map<Value*, Value*> root_map;
 	  std::map<Value*, Value*> leaf_map;
@@ -45,19 +45,18 @@ namespace {
 	  }
 
 	  virtual bool runOnFunction(Function *F) {
-		// TODO: implement this.
 		for (Function::iterator FI = F->begin(), FE = F->end(); FI != FE; ++FI) {
 		  for (BasicBlock::iterator BI = FI->begin(), BE = FI->end(); BI != BE; ++BI) {
 			if (isa<llvm::AllocaInst>(BI) ) {
 			  AllocaInst* alloca_ins = dyn_cast<AllocaInst>(BI);
 			  Type* alloca_type = alloca_ins->getAllocatedType();
-			  if (alloca_type->isArrayTy() ) {
+			  if (alloca_type->isArrayTy() ) { //Has to be of array type. TODO - modularize
 				Type* struct_type = alloca_type->getArrayElementType();
 				if (struct_type->isStructTy() ) {
 				  unsigned elementNum = struct_type->getStructNumElements();
 				  std::cout << BI->getName().str() << std::endl;
 				  for (int i = 0; i < elementNum; i++) {
-					std::string field_name = BI->getName().str() + "_" + char(48+i);
+					std::string field_name = BI->getName().str() + "_" + char(48+i); //convert number to ascii
 					std::cout << field_name << std::endl;
 					std::cout << alloca_type->getArrayNumElements() << std::endl;
 
@@ -68,33 +67,33 @@ namespace {
 					Instruction* ins_ptr = BI;
 
 					AllocaInst* ai = new AllocaInst(array_type, 0, alloca_ins->getAlignment(),
-						field_name.c_str(), ins_ptr);
-					struct_field_map[dyn_cast<Value>(BI)].push_back(dyn_cast<Value>(ai) );
-					root_map[BI] = BI;
+						field_name.c_str(), ins_ptr); //Insert before the old alloca
+					struct_field_map[dyn_cast<Value>(BI)].push_back(dyn_cast<Value>(ai) ); //add instruction and new allocas into the map.
+					root_map[BI] = BI; //tracks all the root nodes.
 				  }
 				}
 			  }
 			}
 
 			if (isa<llvm::GetElementPtrInst>(BI) ) {
-			  std::cout << "find a getelementptrInst" << std::endl;
+			  std::cout << "found  a getelementptrInst" << std::endl;
 			  GetElementPtrInst* getele_inst = dyn_cast<GetElementPtrInst>(BI);
-			  Value* ptr_op = getele_inst->getPointerOperand();
+			  Value* ptr_op = getele_inst->getPointerOperand(); //get the root operand 
 
-			  if (root_map.find(ptr_op) != root_map.end() ) {
+			  if (root_map.find(ptr_op) != root_map.end() ) { //check if it references the root node.
 				std::cout << "Dest: " << BI->getName().str() << std::endl;
 
 				root_map[BI] = root_map[ptr_op];
 
 				std::vector<Value*> index_vec;
-				for (User::op_iterator idx_iter = getele_inst->idx_begin(); idx_iter != getele_inst->idx_end(); idx_iter++) {
+				for (User::op_iterator idx_iter = getele_inst->idx_begin(); idx_iter != getele_inst->idx_end(); idx_iter++) { //get push all the operands in the getelementptr inst.
 				  Value* index_ptr = idx_iter->get();
 				  index_vec.push_back(index_ptr);
 				}
 
 				ArrayRef<Value*> indexArr(index_vec);
 
-				/* Assuming we have at most 1 level of struct which has only premitive types and this is the leaf node
+				/* Assuming we have at most 1 level of struct which has only primitive types and this is the leaf node
 				 * then, we should use the last index to find new ptr and use the first index as the new index
 				 */
 				if(!GetElementPtrInst::getIndexedType(getele_inst->getPointerOperandType(), indexArr)->isAggregateType() ) {
