@@ -62,19 +62,24 @@ namespace {
 
 					Type* array_type =
 					  ArrayType::get(struct_type->getStructElementType(i),
-						  alloca_type->getArrayNumElements() );
+						  alloca_type->getArrayNumElements() ); //create new array for each field
 
 					Instruction* ins_ptr = BI;
 
 					AllocaInst* ai = new AllocaInst(array_type, 0, alloca_ins->getAlignment(),
 						field_name.c_str(), ins_ptr); //Insert before the old alloca
+					std::string str;
+					llvm::raw_string_ostream rso(str);
+					std::cout << "alloca inst(new): " << std::endl;
+					ai->print(rso);
+					std::cout << rso.str() << std::endl;
 					struct_field_map[dyn_cast<Value>(BI)].push_back(dyn_cast<Value>(ai) ); //add instruction and new allocas into the map.
 					root_map[BI] = BI; //tracks all the root nodes.
 				  }
 				}
 			  }
 			}
-
+			//should be two different passes.
 			if (isa<llvm::GetElementPtrInst>(BI) ) {
 			  std::cout << "found  a getelementptrInst" << std::endl;
 			  GetElementPtrInst* getele_inst = dyn_cast<GetElementPtrInst>(BI);
@@ -84,6 +89,7 @@ namespace {
 				std::cout << "Dest: " << BI->getName().str() << std::endl;
 
 				root_map[BI] = root_map[ptr_op];
+				//TODO: make sure it exits this code if it doesn't require replacement.
 
 				std::vector<Value*> index_vec;
 				for (User::op_iterator idx_iter = getele_inst->idx_begin(); idx_iter != getele_inst->idx_end(); idx_iter++) { //get push all the operands in the getelementptr inst.
@@ -96,7 +102,8 @@ namespace {
 				/* Assuming we have at most 1 level of struct which has only primitive types and this is the leaf node
 				 * then, we should use the last index to find new ptr and use the first index as the new index
 				 */
-				if(!GetElementPtrInst::getIndexedType(getele_inst->getPointerOperandType(), indexArr)->isAggregateType() ) {
+				if(!GetElementPtrInst::getIndexedType(getele_inst->getPointerOperandType(), indexArr)->isAggregateType() ) { //assumming all elements are scalars.
+				  //this is a leaf
 				  // If I understand it correctly, it can only be a leaf when it has 2 indices.
 				  assert(index_vec.size() == 2);
 				  int field_idx = dyn_cast<ConstantInt>(index_vec.back() )->getZExtValue();
@@ -111,7 +118,7 @@ namespace {
 					new_getele_inst = GetElementPtrInst::Create(field_ptr, ArrayRef<Value*>(temp), BI->getName().str() + "_new");
 				  }
 				  // Otherwise, we gotta see if we need to inject another addition inst
-				  else {
+				  else {  //this is the expected case
 					Value* new_index = index_map[ptr_op];
 					if (isa<ConstantInt>(index_vec[0]) && dyn_cast<ConstantInt>(index_vec[0])->isZero() ) {
 					  std::cout << "***REPLACING1: " << BI->getName().str() << std::endl;
@@ -136,7 +143,7 @@ namespace {
 				/* Otherwise, it has only one index and it's just getting an intermediate pointer.
 				 * In such case, we should just replace the getelementptr inst with new arithmatic inst
 				 */
-				else {
+				else { //Not a leaf
 				  Value* new_index;
 				  // Use the second index if it is an array type
 				  // Add, I have no idea what happens with multi-dimension arrays. I don't care.
@@ -146,6 +153,7 @@ namespace {
 					new_index = BinaryOperator::Create(Instruction::Add, ConstantInt::get(Type::getInt32Ty(index_vec[0]->getContext() ), 0), index_vec[1], BI->getName().str() + "_new", BI);
 				  }
 				  else {
+					std::cout << "unhandled case " << std::endl; 
 					assert(index_vec.size() == 1);
 					new_index = BinaryOperator::Create(Instruction::Add, index_map[ptr_op], index_vec[0], BI->getName().str() + "_new", BI);
 				  }
